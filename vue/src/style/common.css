@@ -1,0 +1,18 @@
+/* 调试专用 */
+* {
+    /* outline: solid 1px #000;     */
+    box-sizing: border-box;
+}
+body {
+    /* font-family: "Yuanti SC", Youyuan, "You Yuan", 幼圆, "PingFang SC",
+    "Microsoft Yahei", Helvetica, sans-serif; */
+    background-color: #F1F1F1;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* --primary-color:#2bcbba; */
+    --primary-color:#16a085;
+}
+
