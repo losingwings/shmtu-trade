@@ -9,4 +9,4 @@
 
 记得点击pom.xml文件的mav更新相关依赖
 
-在vue文件夹下修改了Login.vue、main.js、添加了utils拦截器文件
+在vue文件夹下修改了view文件夹下的Login.vue、main.js、添加了utils拦截器文件
