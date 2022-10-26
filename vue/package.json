@@ -12,6 +12,7 @@
     "element": "^0.1.4",
     "element-ui": "^2.15.2",
     "moment": "^2.29.1",
+    "validate": "^5.2.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
