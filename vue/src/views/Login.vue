@@ -11,34 +11,44 @@
           <div slot="header" class="clearfix">
             <span>{{ isRegisterBtnClick == false ? "登录" : "注册" }}</span>
             <el-button
-              @click="registerBtn()"
-              style="float: right; padding: 3px 0"
-              type="text"
-              >{{
+                @click="registerBtn()"
+                style="float: right; padding: 3px 0"
+                type="text"
+            >{{
                 isRegisterBtnClick == false ? "注册" : "返回登录"
               }}</el-button>
           </div>
           <!-- 登录面板 -->
           <el-form
-            :model="user"
-            label-width="60px"
-            v-if="isRegisterBtnClick == false"
+              ref="user"
+              :model="user"
+              label-width="60px"
+              v-if="isRegisterBtnClick == false"
           >
-            <el-form-item label="用户名">
+            <el-form-item label="用户名" prop="username">
               <el-input
+                  autocomplete="off"
                   prefix-icon="el-icon-user"
-                v-model="user.username"
-                placeholder="请输入用户名"
+                  v-model="user.username"
+                  placeholder="请输入用户名"
               ></el-input>
             </el-form-item>
-            <el-form-item label="密码">
+            <el-form-item label="密码" prop="password">
               <el-input
+                  autocomplete="off"
                   prefix-icon="el-icon-lock"
                   v-model="user.password"
-                placeholder="请输入密码"
-                type="admin_pwd"
-                show-password
+                  placeholder="请输入密码"
+                  type="admin_pwd"
+                  show-password
               ></el-input>
+            </el-form-item>
+            <el-form-item label="验证码" prop="validCode">
+              <div style="display: flex">
+                  <el-input  prefix-icon="el-icon-key" v-model="user.validCode" placeholder="请输入验证码"></el-input>
+                  <ValidCode @input="createValidCode"/>
+              </div>
+
             </el-form-item>
 
             <!-- 操作按钮 -->
@@ -50,38 +60,35 @@
           </el-form>
           <!-- 注册面板 -->
           <el-form
-            :model="user"
-            label-width="60px"
-            v-if="isRegisterBtnClick == true">
+              :model="user"
+              label-width="60px"
+              v-if="isRegisterBtnClick == true">
 
             <el-form-item label="用户名">
               <el-input
-                v-model="newUser.username"
-                placeholder="请输入用户名"
+                  v-model="newUser.username"
+                  placeholder="请输入用户名"
               ></el-input>
             </el-form-item>
             <el-form-item label="密码">
               <el-input
-                v-model="newUser.password"
-                placeholder="请输入密码"
-                type="admin_pwd"
-                show-password
+                  v-model="newUser.password"
+                  placeholder="请输入密码"
+                  type="admin_pwd"
+                  show-password
               ></el-input>
             </el-form-item>
             <el-form-item label="确认">
               <el-input
-                v-model="newUser.confirmPwd"
-                placeholder="请再次输入密码"
-                type="admin_pwd"
-                show-password
+                  v-model="newUser.confirmPwd"
+                  placeholder="请再次输入密码"
+                  type="admin_pwd"
+                  show-password
               ></el-input>
             </el-form-item>
 
-			<div class="option">
-              <el-button type="primary" style="width: 120px" @click="register()"
-                >注册</el-button
-              >
-            </div>
+            <div class="option">
+              <el-button type="primary" style="width: 120px" @click="register()">注册</el-button></div>
           </el-form>
         </el-card>
       </div>
@@ -91,48 +98,70 @@
 
 <script>
 import request from "@/utils/request";
+import ValidCode from "@/components/ValidCode";
 
 export default {
   name:"Login",
+  components:{
+    ValidCode
+  },
   data() {
     return {
-       imgUrl: "http://localhost:8081/verifyCode?time=" + new Date(), //imgUrl在数据区定义  new Date()生成随机事件用于更换验证码，防止浏览器缓存
       isRegisterBtnClick: false, //注册按钮是否被点击（是否切换到注册面板）
-      user: {},
-      newUser: {},
+      user: localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")): {
+        userName: "",
+        password: "",
+      },
+      newUser: {
+        userName: "",
+        password: "",
+        confirmPwd: "",
+      },
+      validCode:''
+      // 加背景图片
+      // bg: {
+      //   backgroundImage: "url(" + require("@/assets/bg.jpg") + ")",
+      //   backgroundRepeat: "no-repeat",
+      //   backgroundSize: "100% 100%"
+      //
     };
   },
   methods: {
+    // 接收验证码组件提交的 4位验证码
+    createValidCode(data) {
+      this.validCode = data
+    },
     //登录功能
     login() {
-      this.request
-          .post("/user/login", this.user)
-          .then((res) => {
-          if (res) {
-            // //200代表登陆成功
-            //  this.$store.commit("setToken", res.data.token);
-            //  this.$store.commit("setUserId", res.data.data.uid);
-            //  this.$store.commit("setSuperuser", res.data.data.superuser);
-            this.$router.push("/home");
-            this.$message({
-              type: "success",
-              message: "欢迎来到校园二手交易平台",
-            });
-          } else {
-            this.$message.error("密码错误或验证码错误");
-            this.user.verifyCode = ""
-            this.imgUrl = "http://localhost:8081/verifyCode?time=" + new Date();
-          }
-        })
-        .catch(() => {
-          this.$message.error("服务器繁忙，请稍后再试");
-          this.imgUrl = "http://localhost:8081/verifyCode?time=" + new Date();
-        });
+      this.$refs['user'].validate((valid) => {
+        if (valid) {
+          this.request.post("/user/login", this.user).then((res) => {
+                if (!this.user.validCode) {
+                  this.$message.error("请填写验证码")
+                  return
+                }
+                if (this.user.validCode.toLowerCase() !== this.validCode.toLowerCase()) {
+                  this.$message.error("验证码错误")
+                  return
+                }
+                if (res.code === "200") {
+                  //200代表登陆成功
+                  localStorage.setItem("user", JSON.stringify(res.data));//存储用户信息到浏览器
+                  this.$router.push('/home')
+                  this.$message({
+                    type: "success",
+                    message: "欢迎来到校园二手交易平台",
+                  });
+                } else {
+                  this.$message.error(res.msg);
+                }
+              })
+              .catch(() => {
+                this.$message.error("服务器繁忙，请稍后再试");
+              })
+        }
+      });
 
-    },
-    //resetImg方法用于点击更换验证码 图片
-    resetImg() {
-      this.imgUrl = "http://localhost:8081/verifyCode?time=" + new Date();
     },
     //点击注册按钮事件（切换到注册）
     registerBtn() {
@@ -140,31 +169,34 @@ export default {
     },
     //注册功能
     register() {
-		console.log(this.newUser);
-      this.$axios
-          .post("/register", this.newUser)
-          .then((res) => {
-        if (res.data.code == 200) {
-          //后端返回状态码200意为成功
-          this.$message({
-            message: "注册成功",
-            type: "success",
-          });
-          this.registerBtn(); //调用方法转到登录面板
-          //帮助用户填好登录信息
-          this.user.username = this.newUser.username;
-          this.user.password = this.newUser.password;
-        } else {
-          //注册失败
-          this.$message.error("注册失败，用户名已存在");
-        }
-      });
+      if (this.newUser.password == this.newUser.confirmPwd) {
+        this.request
+            .post("/user/register", this.newUser)
+            .then((res) => {
+          if (res.code === "200") {
+            //后端返回状态码200意为成功
+            this.$message({
+              message: "注册成功",
+              type: "success",
+            });
+            this.registerBtn(); //调用方法转到登录面板
+            //帮助用户填好登录信息
+            this.user.userName = this.newUser.userName;
+            this.user.password = this.newUser.password;
+          } else {
+            //注册失败
+            this.$message.error("注册失败，用户名已存在");
+          }
+        });
+      } else {
+        this.$message.error("两次输入的密码不一致！");
+      }
     },
-	sendMs(){
-		this.$axios.get("/sendMs/"+this.newUser.tel).then((res)=>{
-			console.log(res);
-		})
-	}
+/*    sendMs(){
+      this.$axios.get("/sendMs/"+this.newUser.tel).then((res)=>{
+        console.log(res);
+      })
+    }*/
   },
   // created() {
   //   console.log("登录页token值：", localStorage.getItem("token"));
@@ -252,11 +284,11 @@ export default {
   width: 180px;
 }
 .sendCode {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .sendCode .el-input {
-	width: 180px;
+  width: 180px;
 }
 </style>

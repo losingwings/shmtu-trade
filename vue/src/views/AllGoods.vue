@@ -267,13 +267,13 @@ export default {
   },
   created() {
     //获取商品信息
-    this.$axios.get("/goods/findGoodsInfoByPage/1/9").then((res) => {
-      this.good = res.data.data;
-    });
-    //获取商品总条数（用于分页）
-    this.$axios.get("/goods/goodsNum").then((res) => {
-      this.total = res.data.data;
-    });
+    // this.$axios.get("/goods/findGoodsInfoByPage/1/9").then((res) => {
+    //   this.good = res.data.data;
+    // });
+    // //获取商品总条数（用于分页）
+    // this.$axios.get("/goods/goodsNum").then((res) => {
+    //   this.total = res.data.data;
+    // });
   },
 };
 </script>

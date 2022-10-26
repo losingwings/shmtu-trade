@@ -9,18 +9,13 @@ import 'element-ui/lib/theme-chalk/display.css'
 import axios from 'axios'
 import request from "@/utils/request";
 
-
+Vue.use(ElementUI,{size:"min"})
 
 Vue.config.productionTip = false
 
+axios.defaults.baseURL = "http://localhost:8081"
+
 Vue.prototype.request=request
-    axios.defaults.baseURL = "http://localhost:8081"
-
-
-Vue.use(ElementUI)
-
-
-
 new Vue({
   router,
   store,

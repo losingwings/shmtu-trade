@@ -41,12 +41,12 @@
           </div>
           <el-dropdown @command="handleCommand">
             <div class="avatar">
-              <img v-if="!isLogin" src="../assets/avatar.png" alt="" />
-              <img v-else :src="user.avatar" alt="" />
+              <img v-if="!isLogin" :src="user.avatarUrl" alt="" />
+              <img v-else src="../assets/avatar.png" alt="" />
             </div>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="toCenter"
-                >账户：{{ user.username }}</el-dropdown-item
+                >账户：{{ user.nickname}}</el-dropdown-item
               >
               <el-dropdown-item command="toCenter"
                 >余额：￥{{ user.money }}</el-dropdown-item
@@ -62,7 +62,7 @@
       <!-- 路由嵌套 -->
       <router-view />
       <el-footer height="200px">
-        <div>Copyright © 2021 校园二手交易平台</div>
+        <div>Copyright © 2022 校园二手交易平台</div>
         <div class="link">
           <div @click="toAdmin">管理员页面</div>
           &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -80,11 +80,8 @@ export default {
   data() {
     return {
       isLogin: false,
-      user: {
-        uid: null,
-        username: "未命名",
-        avatar: "../assets/avatar.png",
-        money: null,
+      user: localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{
+        avatarUrl: "../assets/avatar.png",
       },
       input: "",
     };
@@ -101,7 +98,8 @@ export default {
         this.$router.push("/center");
       }
       if (command == "logout") {
-        this.$store.commit("setToken", ""); //token设为空字符串
+       // this.$store.commit("setToken", ""); //token设为空字符串
+    localStorage.removeItem("user")
         this.$router.push("/");
         this.$message({
           message: "已退出登录",
@@ -150,10 +148,10 @@ export default {
   },
   created() {
     this.user.uid = localStorage.getItem("userId");
-    this.$axios.get("/user/findUserInfo/" + this.user.uid).then((res) => {
+   /* this.$axios.get("/user/findUserInfo/" + this.user.uid).then((res) => {
       this.user = res.data.data;
       this.isLogin = true;
-    });
+    });*/
   },
 };
 </script>

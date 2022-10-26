@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -11,7 +12,7 @@ export default new Vuex.Store({
   },
   mutations: {
     //存储token方法
-    //设置token等于外部传递进来的值 
+    //设置token等于外部传递进来的值
     setToken(state, token) {
       state.token = token
       localStorage.token = token //同步存储token至localStorage

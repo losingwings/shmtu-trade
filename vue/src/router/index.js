@@ -107,11 +107,7 @@ const routes = [
         name: "ToPay",
         component: () => import('../views/ToPay.vue')
       },
-      {//重新购买
-        path: "/rePay",
-        name: "ToPay",
-        component: () => import('../views/RePay.vue')
-      },
+
       {//添加商品
         path: "/addGoods",
         name: "AddGoods",
@@ -136,14 +132,15 @@ const routes = [
         path: "/search",
         name: "Search",
         component: () => import('../views/Search.vue')
+      },
+      {//个人信息页
+        path: '/center',
+        name: 'Center',
+        component: () => import("../views/Center.vue")
       }
     ]
   },
-  {//个人信息页
-    path: '/center',
-    name: 'Center',
-    component: () => import("../views/Center.vue")
-  },
+
   {//测试页
     path: '/test',
     name: 'Test',
@@ -151,37 +148,12 @@ const routes = [
   }
 ]
 
-
 const router = new VueRouter({
   routes
 })
 
 //路由守卫，发起token验证，限制页面访问
-router.beforeEach((to, from, next) => {
-  //获取token
-  let token = store.getters.getToken
-  if (token == "") {//如果没有token
-    if (to.path == "/") {//如果已经是登录页
-      next()
-    } else {//否则不是登录页
-      next({ path: '/' })//跳转到登录页
-    }
-  } else {//如果有token，就校验token合法性
-    axios({
-      url: '/checkToken',
-      method: 'get',
-      headers: {
-        token: token
-      }
-    }).then((response) => {
-      if (!response.data) {
-        store.commit("setToken", "")//校验失败，移除token
-        next({ path: '/' })
-      }
-    })
-    next()
-  }
-})
+
 
 //定位浏览器高度
 router.afterEach((to, from, next) => {
