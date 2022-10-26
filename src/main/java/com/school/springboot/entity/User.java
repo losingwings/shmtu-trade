@@ -20,6 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+
   @TableName("student_user")
 @ApiModel(value = "User对象", description = "")
 public class User implements Serializable {
@@ -31,6 +32,7 @@ public class User implements Serializable {
 
       @ApiModelProperty("用户名")
       private String username;
+
 
       @ApiModelProperty("密码")
       private String password;
