@@ -16,3 +16,5 @@
 后端的service、mapper、control文件夹下文件都修改了建议重新下载这几个文件
 
 前端的router内index文件修改
+
+前端view的home.vue Password.vue Center.vue有修改
